@@ -3,37 +3,49 @@ version: "3"
 silent: true
 
 vars:
-  YEARS: 6
-  DB: bigquery
+  YEARS: 1
+  DB: duckdb
+  VERSION: 1.8.4
 
 tasks:
   venv:
     cmds:
-      - python3 -m venv .venv
+      - python3 -m venv venv
 
   install:
     cmds:
-      - source .venv/bin/activate && python3 -m pip install --upgrade pip --progress-bar off > /dev/null
-      - source .venv/bin/activate && python3 -m pip install -r requirements.txt --progress-bar off > /dev/null
-      - source .venv/bin/activate && python3 -m pip install dbt-core dbt-{{.DB}} > /dev/null
+      - source venv/bin/activate && python3 -m pip install --upgrade pip --progress-bar off > /dev/null
+      - source venv/bin/activate && python3 -m pip install -r requirements.txt --progress-bar off > /dev/null
+      - source venv/bin/activate && python3 -m pip install dbt-core=={{.VERSION}} dbt-{{.DB}}=={{.VERSION}} > /dev/null
+  
+  test:
+    cmds:
+      - source venv/bin/activate && dbt debug
 
+  deps:
+    cmds:
+      - source venv/bin/activate && dbt deps
   gen:
     cmds:
-      - source .venv/bin/activate && jafgen {{.YEARS}}
+      - source venv/bin/activate && jafgen {{.YEARS}}
+      - rm -rf seeds/*
+      - mv jaffle-data/* seeds
 
   seed:
     cmds:
-      - source .venv/bin/activate && dbt seed
+      - source venv/bin/activate && dbt seed
 
   clean:
     cmds:
       - rm -rf jaffle-data
-      - source .venv/bin/activate && python3 -m pip uninstall dbt-core dbt-{{.DB}} -y
+      - source venv/bin/activate && python3 -m pip uninstall dbt-core=={{.VERSION}} dbt-{{.DB}}=={{.VERSION}} -y
 
   load:
     cmds:
       - task: venv
       - task: install
+      - task: test
+      - task: deps
       - task: gen
       - task: seed
-      - task: clean
+      # - task: clean
