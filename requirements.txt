@@ -53,3 +53,7 @@ urllib3==2.2.1
     # via requests
 virtualenv==20.25.1
     # via pre-commit
+#########################
+dbt-core==1.8.2
+dbt-postgres==1.8.2
+dbt-duckdb==1.8.2

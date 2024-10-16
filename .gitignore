@@ -5,6 +5,7 @@ env
 
 target/
 dbt_packages/
+package-lock.yml
 logs/
 profiles.yml
 
@@ -14,3 +15,5 @@ profiles.yml
 
 .ruff_cache
 __pycache__
+
+.vscode/
