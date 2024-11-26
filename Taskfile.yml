@@ -40,6 +40,18 @@ tasks:
       - rm -rf jaffle-data
       - source venv/bin/activate && python3 -m pip uninstall dbt-core=={{.VERSION}} dbt-{{.DB}}=={{.VERSION}} -y
 
+  up:
+    cmds:
+      - docker-compose build
+#      - docker-compose up &
+#      - echo "docker-compose up is running in the background. PID: $!"
+      - docker-compose up -d
+      - echo "docker-compose up is running in the background."
+
+  down:
+    cmds:
+      - docker-compose down
+
   load:
     cmds:
       - task: venv
